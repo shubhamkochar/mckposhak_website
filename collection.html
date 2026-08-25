@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collection — Manak Chand Kochar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a href="index.html" class="brand" id="brandLink">Manak Chand Kochar <span>| Rajputi Poshak</span></a>
+    <nav class="nav-links">
+      <a href="collection.html" class="active">Collection</a>
+      <a href="index.html#about">About</a>
+      <a href="index.html#location">Visit Us</a>
+      <a href="index.html#footer">Contact</a>
+    </nav>
+    <div class="social-icons">
+      <a class="social-icon insta-link" href="#" target="_blank" rel="noopener" aria-label="Instagram"></a>
+      <a class="social-icon yt-link" href="#" target="_blank" rel="noopener" aria-label="YouTube"></a>
+      <a class="nav-cta" id="navWa" href="#" target="_blank" rel="noopener"></a>
+    </div>
+  </div>
+</header>
+
+<section class="hero compact">
+  <div class="jaali"></div>
+  <div class="wrap hero-inner">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span class="sep">/</span><span class="current">Collection</span>
+    </div>
+    <span class="eyebrow">Full Collection</span>
+    <h1>Every Poshak, In One Place</h1>
+    <p class="desc">Browse the full range and tap any piece to see more photos and details, or enquire straight on WhatsApp.</p>
+  </div>
+  <svg class="skyline" viewBox="0 0 1000 70" preserveAspectRatio="none">
+    <path fill="#faf3e6" d="M0,70 Q50,8 100,70 Q150,8 200,70 Q250,8 300,70 Q350,8 400,70 Q450,8 500,70 Q550,8 600,70 Q650,8 700,70 Q750,8 800,70 Q850,8 900,70 Q950,8 1000,70 L1000,70 L0,70 Z"/>
+  </svg>
+</section>
+
+<section class="collection tight">
+  <div class="wrap">
+    <div class="filters" id="filters"></div>
+    <div class="grid" id="productGrid"></div>
+  </div>
+</section>
+
+<footer id="footer">
+  <div class="wrap">
+    <div class="footer-inner">
+      <div>
+        <h3>Manak Chand Kochar</h3>
+        <p>Rajputi Poshak &amp; bridal collections<br>Bikaner, Rajasthan</p>
+      </div>
+      <div>
+        <h3>Reach us</h3>
+        <div class="footer-links">
+          <a href="#" id="footerWa" target="_blank" rel="noopener">WhatsApp</a>
+          <a href="collection.html">Collection</a>
+          <a href="index.html#about">About</a>
+          <a href="index.html#location">Visit Us</a>
+        </div>
+        <div class="social-icons" style="margin-top:16px;">
+          <a class="social-icon insta-link" href="#" target="_blank" rel="noopener" aria-label="Instagram"></a>
+          <a class="social-icon yt-link" href="#" target="_blank" rel="noopener" aria-label="YouTube"></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2026 Manak Chand Kochar — Rajputi Poshak</div>
+  </div>
+</footer>
+
+<a class="float-wa" id="floatWa" href="#" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"></a>
+
+<script src="products.js"></script>
+<script>
+  wireGeneralWaButtons(["navWa","footerWa","floatWa"]);
+  document.getElementById("navWa").innerHTML = waIcon + " Chat";
+  document.getElementById("floatWa").innerHTML = waIcon;
+  document.getElementById("brandLink").insertAdjacentHTML("afterbegin", logoMark);
+  document.querySelectorAll(".insta-link").forEach(el => el.innerHTML = instaIcon);
+  document.querySelectorAll(".yt-link").forEach(el => el.innerHTML = ytIcon);
+  wireSocial();
+
+  const categories = ["All", ...new Set(PRODUCTS.map(p => p.category))];
+  const filtersEl = document.getElementById("filters");
+  const gridEl = document.getElementById("productGrid");
+
+  function renderGrid(category){
+    const list = category === "All" ? PRODUCTS : PRODUCTS.filter(p => p.category === category);
+    gridEl.innerHTML = list.map(p => `
+      <article class="card">
+        <a class="card-image linked" href="product.html?id=${p.id}" style="background:${imageBackground(p,0)}">
+          ${p.images[0] ? "" : swatchIcon}
+        </a>
+        <span class="cat-tag">${p.category}</span>
+        <h3><a href="product.html?id=${p.id}">${p.name}</a></h3>
+        <p class="desc">${p.shortDesc}</p>
+        <span class="price">${p.price}</span>
+        <div class="card-actions">
+          <a class="card-view" href="product.html?id=${p.id}">View Details</a>
+          <a class="card-cta" href="${waLink(p.name)}" target="_blank" rel="noopener">${waIcon} Enquire</a>
+        </div>
+      </article>
+    `).join("");
+  }
+
+  filtersEl.innerHTML = categories.map((c,i) =>
+    `<button class="filter-btn ${i===0 ? "active" : ""}" data-cat="${c}">${c}</button>`
+  ).join("");
+
+  filtersEl.addEventListener("click", e => {
+    const btn = e.target.closest(".filter-btn");
+    if(!btn) return;
+    filtersEl.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    renderGrid(btn.dataset.cat);
+  });
+
+  renderGrid("All");
+</script>
+
+</body>
+</html>

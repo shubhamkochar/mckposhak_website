@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">Product — Manak Chand Kochar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a href="index.html" class="brand" id="brandLink">Manak Chand Kochar <span>| Rajputi Poshak</span></a>
+    <nav class="nav-links">
+      <a href="collection.html">Collection</a>
+      <a href="index.html#about">About</a>
+      <a href="index.html#location">Visit Us</a>
+      <a href="index.html#footer">Contact</a>
+    </nav>
+    <div class="social-icons">
+      <a class="social-icon insta-link" href="#" target="_blank" rel="noopener" aria-label="Instagram"></a>
+      <a class="social-icon yt-link" href="#" target="_blank" rel="noopener" aria-label="YouTube"></a>
+      <a class="nav-cta" id="navWa" href="#" target="_blank" rel="noopener"></a>
+    </div>
+  </div>
+</header>
+
+<section class="product-detail">
+  <div class="wrap">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span class="sep">/</span>
+      <a href="collection.html">Collection</a><span class="sep">/</span>
+      <span class="current" id="crumbName">Product</span>
+    </div>
+
+    <div class="product-layout" id="productLayout">
+      <!-- filled by JS -->
+    </div>
+
+    <div class="related" id="relatedSection">
+      <h2>You may also like</h2>
+      <div class="grid" id="relatedGrid"></div>
+    </div>
+  </div>
+</section>
+
+<footer id="footer">
+  <div class="wrap">
+    <div class="footer-inner">
+      <div>
+        <h3>Manak Chand Kochar</h3>
+        <p>Rajputi Poshak &amp; bridal collections<br>Bikaner, Rajasthan</p>
+      </div>
+      <div>
+        <h3>Reach us</h3>
+        <div class="footer-links">
+          <a href="#" id="footerWa" target="_blank" rel="noopener">WhatsApp</a>
+          <a href="collection.html">Collection</a>
+          <a href="index.html#about">About</a>
+          <a href="index.html#location">Visit Us</a>
+        </div>
+        <div class="social-icons" style="margin-top:16px;">
+          <a class="social-icon insta-link" href="#" target="_blank" rel="noopener" aria-label="Instagram"></a>
+          <a class="social-icon yt-link" href="#" target="_blank" rel="noopener" aria-label="YouTube"></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2026 Manak Chand Kochar — Rajputi Poshak</div>
+  </div>
+</footer>
+
+<a class="float-wa" id="floatWa" href="#" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"></a>
+
+<script src="products.js"></script>
+<script>
+  wireGeneralWaButtons(["navWa","footerWa","floatWa"]);
+  document.getElementById("navWa").innerHTML = waIcon + " Chat";
+  document.getElementById("floatWa").innerHTML = waIcon;
+  document.getElementById("brandLink").insertAdjacentHTML("afterbegin", logoMark);
+  document.querySelectorAll(".insta-link").forEach(el => el.innerHTML = instaIcon);
+  document.querySelectorAll(".yt-link").forEach(el => el.innerHTML = ytIcon);
+  wireSocial();
+
+  const params = new URLSearchParams(window.location.search);
+  const product = getProduct(params.get("id")) || PRODUCTS[0];
+
+  document.getElementById("pageTitle").textContent = `${product.name} — Manak Chand Kochar`;
+  document.getElementById("crumbName").textContent = product.name;
+
+  let activeImage = 0;
+
+  function renderLayout(){
+    document.getElementById("productLayout").innerHTML = `
+      <div class="gallery">
+        <div class="gallery-main" id="galleryMain" style="background:${imageBackground(product, activeImage)}">
+          ${product.images[activeImage] ? "" : swatchIcon}
+        </div>
+        <div class="gallery-thumbs" id="galleryThumbs">
+          ${product.images.map((img, i) => `
+            <div class="thumb ${i === activeImage ? "active" : ""}" data-i="${i}" style="background:${imageBackground(product, i)}"></div>
+          `).join("")}
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="cat-tag">${product.category}</span>
+        <h1>${product.name}</h1>
+        <span class="price">${product.price}</span>
+        <p class="long-desc">${product.longDesc}</p>
+        <ul class="meta-list">
+          <li><span>Category</span><span>${product.category}</span></li>
+          <li><span>Made to order</span><span>Yes</span></li>
+          <li><span>Set includes</span><span>Kanchli, ghagra, odhni</span></li>
+        </ul>
+        <a class="detail-cta" href="${waLink(product.name)}" target="_blank" rel="noopener">${waIcon} Enquire on WhatsApp</a>
+        <br>
+        <a class="back-link" href="collection.html">&larr; Back to collection</a>
+      </div>
+    `;
+
+    document.getElementById("galleryThumbs").addEventListener("click", e => {
+      const thumb = e.target.closest(".thumb");
+      if(!thumb) return;
+      activeImage = parseInt(thumb.dataset.i, 10);
+      renderLayout();
+    });
+  }
+
+  renderLayout();
+
+  const related = PRODUCTS.filter(p => p.id !== product.id && p.category === product.category).slice(0, 3);
+  const relatedList = related.length ? related : PRODUCTS.filter(p => p.id !== product.id).slice(0, 3);
+
+  document.getElementById("relatedGrid").innerHTML = relatedList.map(p => `
+    <article class="card">
+      <a class="card-image linked" href="product.html?id=${p.id}" style="background:${imageBackground(p,0)}">
+        ${p.images[0] ? "" : swatchIcon}
+      </a>
+      <span class="cat-tag">${p.category}</span>
+      <h3><a href="product.html?id=${p.id}">${p.name}</a></h3>
+      <p class="desc">${p.shortDesc}</p>
+      <span class="price">${p.price}</span>
+      <div class="card-actions">
+        <a class="card-view" href="product.html?id=${p.id}">View Details</a>
+        <a class="card-cta" href="${waLink(p.name)}" target="_blank" rel="noopener">${waIcon} Enquire</a>
+      </div>
+    </article>
+  `).join("");
+</script>
+
+</body>
+</html>
